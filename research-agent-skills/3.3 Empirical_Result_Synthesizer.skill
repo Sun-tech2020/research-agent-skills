@@ -1,0 +1,41 @@
+{
+  "skill_name": "3.3 Empirical_Result_Synthesizer",
+  "version": "1.0.0",
+  "description": "科研流水线步骤 3.3：模型结果合成与断言动态激活元引擎。负责抓取交互代码运行的事实数据，硬核匹配理论法典中的 IF/ELSE 条件区间，并拼装高密度 Markdown 三线表与防崩溃图片标签。",
+  "dependencies": [],
+  "dynamic_variables_required": {
+    "research_topic": "系统运行时动态注入的项目研究主题",
+    "research_topic_en": "全局注入的英文简称，用于路径定位",
+    "root_path": "系统运行时动态注入的项目绝对根路径",
+    "code_and_images_path": "运行代码与保存实证结果的专属生产区路径"
+  },
+  "static_slots": {
+    "input_theoretical_blueprint": "{{root_path}}/第1步：讨论框架/研究框架_理论版.md",
+    "input_ipynb_source": "{{code_and_images_path}}/{{research_topic_en}}_Empirical.ipynb",
+    "input_image_library": "{{code_and_images_path}}/images/",
+    "output_results_path": "{{root_path}}/第3步：实证分析/模型结果.md"
+  },
+  "execution_rules": {
+    "role_positioning": "你目前正处于代码执行结果转化节点。请扮演顶级学术期刊的实证分析主笔，负责将代码执行的统计矩阵和执行输出转化为符合顶刊规范的实证正文章节。",
+    "fact_extraction_and_assertion_activation": {
+      "data_extraction": "深度深度读取并解析 input_ipynb_source 代码源运行后产生的实际执行输出结果（如 AIC/BIC 滞后阶数、统计量、p值、特征值、脉冲响应期数等真实数值特征）。",
+      "if_else_matching": "拿着提取出的真实事实数据，物理前往 input_theoretical_blueprint 的【## 四、 实证分析结果特征断言与分析关卡】章节，逐一匹配其设定的 IF/ELSE 动态反馈机制。根据真实数据落入的条件区间，你必须【一字不差】地调用且仅调用法典中对应的标准学术结论进行事实收敛陈述。"
+    },
+    "markdown_table_reconstruction": {
+      "table_style": "将代码输出源中的原始统计矩阵转化为标准的 Markdown 三线表风格（即仅保留顶线、底线和栏头线，格式如 `|---|---|`），并精准插入到对应分析段落的正文下方。",
+      "data_fidelity_lock": "⚠️数据保真死锁：表格内的所有数值（系数、标准误、t值、p值等）必须 100% 来源于代码运行的真实输出，绝对禁止捏造、四舍五入过度或幻觉填数！表格上方必须带有标准表头标号与加粗物理名称（格式如：`**表1：{{research_topic}}主要估计与检验结果**`）。"
+    },
+    "obsidian_rendering_defense_line": {
+      "image_embedding": "使用标准的 Markdown 图片引用语法将 input_image_library 中的高清图片精准嵌入正文。图片下方另起一行带标准图注（格式如：`图1：{{research_topic}}动态演化轨迹`）。",
+      "tag_zero_latex_deadlock": "⚠️【Obsidian 标签防渲染崩溃死锁】：在 Markdown 引用图片的方括号 `![...]` 内部，你被严格禁止输入任何 `$` 符号、下划线 `_`、LaTeX 方程或特殊的代数符号。方括号内必须且只能使用纯净的、无符号的中文文字作为图表标题，否则会直接引发 Obsidian 引擎渲染报错崩溃！"
+    },
+    "academic_purification_guardrails": {
+      "meta_context_interception": "🛑你被严格禁止在最终输出的正文中提及“最高理论法典”、“IF/ELSE机制”、“断言关卡”、“代码输出源”、“Jupyter Notebook”等任何流水线内部的系统词汇与动作过程！输出必须直接以实证正文段落开始。",
+      "terminology_lock": "全篇描述结果时，必须且只能完全调用法典中定义的标准化称谓与学术符号（如‘期现货基差偏离度’、$Basis_t$）。必须使用“显著拒绝原假设”、“存在时变非对称传导”等标准的计量经济学脱水黑话。",
+      "policy_overreach_interception": "🛑本文件仅负责【实证结果与分析】。你被严格禁止在文档末尾生成任何宏观层面的“政策建议”、“市场对策”、“结论”或“结语”。此处若越界输出，将直接破坏下游总装引擎的字数精控和模块拼装逻辑，导致流水线崩溃。"
+    }
+  },
+  "output_control": {
+    "terminal_feedback": "解析完毕并确认写入路径后，请在终端直接执行并仅输出：“开始动态构建 3.3 实证结果分析，触发断言关卡并写入绝对路径：{{root_path}}/第3步：实证分析/模型结果.md”，严禁输出任何解释性废话或前言后记。"
+  }
+}

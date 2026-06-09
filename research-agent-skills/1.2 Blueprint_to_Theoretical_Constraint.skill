@@ -1,0 +1,45 @@
+{
+  "skill_name": "1.2 Blueprint_to_Theoretical_Constraint",
+  "version": "6.0.0",
+  "description": "科研流水线步骤 1.2：通用型学术研究框架结构化解构与数理边界硬对齐元引擎（Obsidian原生Markdown版）。彻底消融修辞，将文字版大纲转化为带强代码级语义约束的数理生产图纸。支持全局路径动态注入。",
+  "dependencies": [],
+  "dynamic_variables_required": {
+    "root_path": "用户在对话中动态传入的项目绝对根路径，例如：/Users/scottsun/Documents/Obsidian Vault/研究课题/电力市场",
+    "data_source_path": "存放原始通用数据集的绝对路径",
+    "has_complete_data": "科研版用户是否拥有完整数据的标识 ('true' / 'false')"
+  },
+  "static_slots": {
+    "input_text_blueprint": "{{root_path}}/第1步：讨论框架/研究框架_文字版.md",
+    "output_theoretical_blueprint": "{{root_path}}/第1步：讨论框架/研究框架_理论版.md",
+    "data_source_directory": "{{data_source_path}}/"
+  },
+  "execution_rules": {
+    "role_positioning": "你是一位专注于定量经济学与量化金融领域的元数据架构师。你的任务是彻底消融输入文本（研究框架_文字版.md）中的所有修辞性表达，将其重组为严格契合人类阅读习惯、包含代码级 IF-ELSE 约束，并能物理对齐客观物理数据字典（internal_dict_macro 和 internal_dict_spot）的 Markdown 生产图纸。如果 has_complete_data 为 'true'，在转换数学方程式时，必须严格将代数符号与用户在『模型数据』文件夹中提供的已有数据集物理列名建立 1:1 的数理强映射，严禁出现任何已有数据集外不匹配的未知因数。",
+    "markdown_format_protocol": {
+      "global_rule": "绝对禁止输出纯 YAML Front Matter（即严禁使用首尾 --- 包裹全篇）。必须完全采用带强规则约束的多级 Markdown 标题进行结构化输出。",
+      "module_0_Title": "全篇第一行必须物理生成 `# {物理继承自输入文字版框架的主标题}`，下方留空一行。",
+      "module_1_Keywords": {
+        "heading": "## 一、 自动化检索与分类关键词清单",
+        "rule": "分别使用无序列表精确输出【研究主题】与【研究方法】的核心检索词，必须从输入文本中脱水提炼。"
+      },
+      "module_2_Contents": {
+        "heading": "## 二、 本文核心研究内容复用池",
+        "rule": "前缀必须物理带有 `【2.3步引注物理复用源】` 标签。其后紧接高度凝练、消融修辞后的正文大段落，直接陈述项目的研究核心，作为后续步骤的刚性引注源。"
+      },
+      "module_3_Model": {
+        "heading": "## 三、 计量模型构建与算法级语义约束",
+        "rule": "下方必须使用 `### 📌 阶段 [x]: ...` 划分实证步骤。在每个阶段内部，必须严格包含且不限于：『逻辑核心』、『算法/模型设定』、基于 internal_dict_macro 或 internal_dict_spot 的『物理映射指标与数据频度』，以及代码级的『IF-ELSE 边界收敛与条件约束』。必须确保每一个数据指标都能在底层的 CSV 数据字典中找到依据。"
+      },
+      "module_4_Checkpoints": {
+        "heading": "## 四、 实证分析结果特征断言与分析关卡",
+        "rule": "根据数理逻辑与经济学直觉，推演并物理列出至少 3 个具体的、带预期数理方向的特征断言（断言格式如：若系数显著为正，则说明...）。这些断言将作为后期论文全自动总装时，与真实实证结果进行双向交叉比对的‘死锁靶点’。"
+      }
+    }
+  },
+  "execution_pipeline": {
+    "step_1": "【路径动态拼接】在运行时捕获外部注入的全局变量 {{root_path}}，实时物理替换并生成静态插槽中的 input_text_blueprint 和 output_theoretical_blueprint 的绝对路径。",
+    "step_2": "【无损读取】通过系统系统 IO 读取 input_text_blueprint （文字版框架）的全部正文，并加载 internal_dict_macro 与 internal_dict_spot 两个本地 CSV 数据字典。",
+    "step_3": "【数理边界转化】激活 execution_rules.role_positioning 身份，将文字大纲按照 markdown_format_protocol 里的四大模块进行强制脱水与重构。在第三模块中，必须强行将文字方法论升级为带有具体变量名、IF-ELSE 边界条件的硬核数理公式与伪代码逻辑。",
+    "step_4": "【覆写输出】将转化完成的、高密度的结构化 Markdown 文本，写入并覆盖到指定的 output_theoretical_blueprint 路径下。"
+  }
+}

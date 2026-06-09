@@ -1,0 +1,130 @@
+{
+  "skill_name": "Research_Pipeline_Matrix_Engine",
+  "version": "1.4.0",
+  "description": "科研全自动流水线超级中央编排引擎。支持数据完整性自适应路径路由，完美支持‘不完整数据分流暂存’与‘模型数据生产区全面闭环’的硬核科研自适应流水线。",
+  "activation_protocol": {
+    "command_trigger_pattern": "调用 Research_Pipeline_Matrix_Engine.skill，开始课题：{research_topic}的分析，论文成果路径存储到：{root_path}，原始数据源路径指定为：{data_source_path}，实证代码与图片生产区指定为：{code_and_images_path}",
+    "initialization_action": "当接收到上述指令时，Agent 必须立刻物理拦截（Intercept）执行流，严禁直接生成 any 文档。Agent 必须首先向用户抛出数据完整性问询，明确数据就位状态后方可激活对应的执行分支。[cite: 30]"
+  },
+  "global_dynamic_variables": {
+    "research_topic": "运行时由用户指令动态注入的中文核心研究主题[cite: 30]",
+    "research_topic_en": "由系统基于主题自主指定的英文简称（用于代码与文件命名）[cite: 30]",
+    "root_path": "【成果区】论文成果与 Obsidian 联动文档最终落地的绝对路径[cite: 30]",
+    "data_source_path": "【原始数据存放区】存放科研版前期不完整/待孵化原始数据的绝对路径",
+    "code_and_images_path": "【模型数据/实证生产区】存放两轨完整数据、运行代码、保存ipynb脚本、建模过程及高清图表输出的专属闭环核心生产区路径",
+    "has_complete_data": "运行时注入的标识（'true' / 'false'），表示科研版用户是否拥有完整数据"
+  },
+  "sub_skills_registry": {
+    "step_1_1": "1.1 Outline_Generator.skill",
+    "step_1_2": "1.2 Blueprint_to_Theoretical_Constraint.skill",
+    "step_2_1": "2.1 Literature_Capturer.skill",
+    "step_2_2": "2.2 Reviewer_Blueprint.skill",
+    "step_2_3": "2.3 Literature_Review_Synthesizer.skill",
+    "step_3_2": "3.2 Empirical_Modeler.skill",
+    "step_3_3": "3.3 Empirical_Result_Synthesizer.skill",
+    "step_4_1": "4.1 Academic_Paper_Generator.skill",
+    "step_4_2": "4.2 Format_Standard.skill"
+  },
+  "interactive_regime_routing_protocol": {
+    "step_0_init_data_inquiry": "『📢 请问您目前是否有完整的数据？\n  👉 选项 [A] 有完整数据（请将数据放入“模型数据”文件夹，我将仅基于您的已有数据进行建模，不推荐 any 外部多余变量）\n  👉 选项 [B] 没有/仅有部分数据（请将数据放入“原始数据”文件夹，我将自主为您匹配设计前沿计量模型，并给出后续数据抓取建议）\n请直接回复 [A] 或 [B]：』",
+    "branching_logic": {
+      "if_has_complete_data_true": "锁定 `has_complete_data` 设为 'true'。data_source_path 自动指向 code_and_images_path。提示用户将数据放入『模型数据』文件夹。启动 1.1 组件时强制注入 `has_complete_data='true'`，约束大纲建模必须仅基于已有数据。1.2 结束后自动 Pass 挂起关卡。",
+      "if_has_complete_data_false": "锁定 `has_complete_data` 设为 'false'。提示用户将已有数据放入『原始数据』文件夹。启动 1.1 组件时注入 `has_complete_data='false'`，启动自主发散理想建模。1.2 结束后在 3.1 拦截并指导用户补齐数据放入『模型数据』。"
+    }
+  },
+  "human_interaction_protocol": {
+    "core_interception_rule": "🛑【单步确认铁律】：每当输出任意一个 .md 成果文件后，Agent 必须立刻挂起执行流。必须根据当前和下一步骤，抛出『级联动态问询』。绝对不准自主向下跨越！",
+    "feedback_loop_syntax": "每一步结束时，Agent 必须物理读取当前步骤名称与下一个目标步骤，按以下规则输出交互问询：\n『📢 [当前步骤] 【[当前文件].md】已生成，是否开始生成 [下一步骤]【[下一步文件].md】？』",
+    "bifurcation_action": {
+      "on_user_reply_YES": "如果用户回复 ‘是’ 或发出确认口令，Agent 立刻自动流转并加载下一步骤的 skill 进行生成。",
+      "on_user_reply_NO": "如果用户回复 ‘否’，Agent 必须立刻进入 Standby 挂起状态，并强制打印且只能打印以下指引：\n『🛑 明白，已为您挂起流水线。当 [当前步骤] 【[当前文件].md】完善后，请明示：开始生成 [下一步骤]【[下一步文件].md】』"
+    }
+  },
+  "master_execution_pipeline": {
+    "第一步：讨论框架，确认研究主题和研究方法": {
+      "1.1 讨论框架": {
+        "call_skill": "1.1 Outline_Generator",
+        "io_protocol": "根据全局 has_complete_data 变量决定建模策略。若为 'true'，则严格限制在大纲中仅基于已有数据物理指标开展方法设计。",
+        "output_path": "{{root_path}}/第1步：讨论框架/研究框架_文字版.md",
+        "next_step_gate": {
+          "next_step": "1.2 理论版框架转换",
+          "query_template": "1.1 【研究框架_文字版.md】已生成，是否开始生成 1.2【研究框架_理论版.md】？",
+          "suspend_guide": "当1.1 【研究框架_文字版.md】完善后，请明示：开始生成 1.2【研究框架_理论版.md】"
+        }
+      },
+      "1.2 理论版框架转换": {
+        "call_skill": "1.2 Blueprint_to_Theoretical_Constraint",
+        "io_protocol": "联动扫描 {{data_source_path}}（原始数据/不完整数据区）以推演特征，确立算法级 IF-ELSE 边界约束与特征断言死锁靶点。",
+        "output_path": "{{root_path}}/第1步：讨论框架/研究框架_理论版.md",
+        "next_step_gate": {
+          "next_step": "2.1 文献物理捕获",
+          "query_template": "1.2 【研究框架_理论版.md】已生成，是否开始 2.1【文献物理捕获】？",
+          "suspend_guide": "当1.2 【研究框架_理论版.md】完善后，请明示：开始 2.1【文献物理捕获】"
+        }
+      }
+    },
+    "第二步：搜集并下载文献": {
+      "2.1 文献物理捕获": { "call_skill": "2.1 Literature_Capturer", "output_path": "{{root_path}}/第2步：参考文献/download_manifest.json" },
+      "2.2 文献群像解构": {
+        "call_skill": "2.2 Reviewer_Blueprint",
+        "output_path": "{{root_path}}/第2步：参考文献/总体评论+每篇论文摘要.md",
+        "next_step_gate": {
+          "next_step": "2.3 文献综述总装",
+          "query_template": "2.2 【总体评论+每篇论文摘要.md】已生成，是否开始生成 2.3【文献综述.md】？",
+          "suspend_guide": "当2.2 【总体评论+每篇论文摘要.md】完善后，请明示：开始生成 2.3【文献综述.md】"
+        }
+      },
+      "2.3 文献综述总装": {
+        "call_skill": "2.3 Literature_Review_Synthesizer",
+        "output_path": "{{root_path}}/第2步：参考文献/文献综述.md",
+        "next_step_gate": {
+          "next_step": "3.2 计量模型构建与代码双轨产出",
+          "query_template": "2.3 【文献综述.md】已生成，是否开始生成 3.2【建模.md】？",
+          "suspend_guide": "当2.3 【文献综述.md】完善后，请明示：开始生成 3.2【建模.md】"
+        }
+      }
+    },
+    "第三步：实证分析": {
+      "3.1 下载数据（人类干预挂起门关）": {
+        "call_skill": "None (Human Action Hooks)",
+        "action_description": "智能体输出所需数据指标清单，提示用户寻找并将补齐后的【完整数据】物理放入模型数据生产区路径（{{code_and_images_path}}）中，等待用户回复‘数据已就位’。"
+      },
+      "3.2 计量模型构建与代码双轨产出": {
+        "call_skill": "3.2 Empirical_Modeler",
+        "io_protocol": "读取成果区理论版法典。强制对齐 {{code_and_images_path}}（模型数据区）下的完整数据集。将生成的建模说明文档与可执行的交互式 .ipynb 脚本全部就地写入代码图片生产区。",
+        "output_path": [
+          "{{root_path}}/第3步：实证分析/建模.md",
+          "{{code_and_images_path}}/{{research_topic_en}}_Empirical.ipynb"
+        ],
+        "next_step_gate": {
+          "next_step": "3.3 模型结果合成与断言动态激活",
+          "query_template": "3.2 【建模.md】已生成（请先在本地运行完 ipynb 代码并确认），是否开始生成 3.3【模型结果.md】？",
+          "suspend_guide": "当3.2 【建模.md】完善后，请明示：开始生成 3.3【模型结果.md】"
+        }
+      },
+      "3.3 模型结果合成与断言动态激活": {
+        "call_skill": "3.3 Empirical_Result_Synthesizer",
+        "io_protocol": "深度读取并解析 {{code_and_images_path}}/{{research_topic_en}}_Empirical.ipynb 运行后产生的真实回归统计矩阵。激活断言后，将生成的标准 Markdown 三线表和特征图片完全在模型数据生产区（{{code_and_images_path}}）内实现闭环沉淀。",
+        "output_path": "{{root_path}}/第3步：实证分析/模型结果.md",
+        "next_step_gate": {
+          "next_step": "4.1 & 4.2 终极收官总装与格式洗牌",
+          "query_template": "3.3 【模型结果.md】已生成，是否开始生成 4.1【论文全文.md】进行终极装配与洗牌？",
+          "suspend_guide": "当3.3 【模型结果.md】完善后，请明示：开始生成 4.1【论文全文.md】"
+        }
+      }
+    },
+    "第四步：写成论文（自适应模式）": {
+      "4.1 & 4.2 终极收官总装与格式洗牌": {
+        "call_skill": [
+          "4.1 Academic_Paper_Generator",
+          "4.2 Format_Standard"
+        ],
+        "io_protocol": "全面接入 {{root_path}} 下的综述资产、以及完全沉淀在 {{code_and_images_path}} 模型数据文件夹下的全套建模.md与模型结果.md。拼装并执行 4.2 郑商所格式洗牌。",
+        "output_path": "{{root_path}}/第4步：写成论文/论文全文.md"
+      }
+    }
+  },
+  "global_guardrails": {
+    "latex_render_defense": "全链路严格禁止生成 ```latex 代码块。"
+  }
+}

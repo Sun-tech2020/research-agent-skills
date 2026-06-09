@@ -1,0 +1,35 @@
+{
+  "skill_name": "4.2 Format_Standard",
+  "version": "3.2.0",
+  "description": "报告格式校准工具（规范参考文献版）",
+  "formatting_rules": {
+    "structure_alignment": {
+      "title": "顶部空一行，居中排布，下方空一行接摘要。",
+      "abstract_prefix": "必须以 **摘  要：** 开头（加粗，中间空两格，全角冒号）。",
+      "keywords_prefix": "必须以 **关键词：** 开头（加粗，全角冒号），词间空两格，下方空一行接正文。"
+    },
+    "heading_hierarchy": {
+      "level_1": "一、 (加粗独立行)",
+      "level_2": "（一） (独立行)",
+      "level_3": "1. [空格] (阿拉伯数字后接点和空格)"
+    },
+    "data_source_rule": {
+      "first_occurrence": "仅在全文第一个出现的图表（表1）下方，左对齐标注：【数据来源：郑商所研究所，下同】",
+      "subsequent_occurrence": "后续所有表格和图形下方，一律不进行任何数据来源的标注，直接忽略该行。"
+    },
+    "table_and_figure": {
+      "table_caption": "表体上方居中，格式为 **表1 XXXX**，单位另起一行 HTML 居右。",
+      "figure_caption": "图片正下方居中，格式为 **图1 XXXX**。",
+      "notes_style": "位于图表下方左对齐。多条附注格式为：注：1. XXXX（点后空一格，末尾无标点）。"
+    },
+    "references": {
+      "title": "正文核心内容下空一行，**参考文献：** 加粗左对齐，后标全角冒号；具体文献名称另起一行。",
+      "body_style": "一律统一采用：[序号]作者.文章名[J],出版年。",
+      "punctuation": "中文使用3号仿宋字体，英文、数字使用Times New Roman字体，均使用半角标点符号。"
+    }
+  },
+  "guardrails": {
+    "latex_render": "严格禁止 ```latex 代码块。独立公式用 $$\\dots$$，行内变量用 $ \\dots $。",
+    "content_integrity": "严禁删减或压缩正文 5000-5500 字的核心学术论证内容。"
+  }
+}

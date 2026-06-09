@@ -1,0 +1,35 @@
+{
+  "skill_name": "3.2 Empirical_Modeler",
+  "version": "1.0.0",
+  "description": "科研流水线步骤 3.2：计量模型扩写与 Python 算法交互脚本双轨生成元引擎。负责无损平铺最高理论法典数理公式，并一字不差对齐本地数据字典的物理列名。",
+  "dependencies": [],
+  "dynamic_variables_required": {
+    "research_topic": "系统运行时动态注入的项目研究主题",
+    "research_topic_en": "由系统或 Agent 自主指定的英文标识名，用于脚本与路径命名",
+    "root_path": "系统运行时动态注入的项目绝对根路径",
+    "code_and_images_path": "运行代码与保存实证结果的专属生产区路径"
+  },
+  "static_slots": {
+    "input_highest_blueprint": "{{root_path}}/第1步：讨论框架/研究框架_理论版.md",
+    "output_math_model_path": "{{root_path}}/第3步：实证分析/建模.md",
+    "output_ipynb_path": "{{code_and_images_path}}/{{research_topic_en}}_Empirical.ipynb"
+  },
+  "execution_rules": {
+    "role_positioning": "你目前正处于实证分析脚手架搭建节点。请扮演顶级量化金融科学家与全栈数据工程师，以‘最高理论法典’为唯一灵魂进行双轨产出。",
+    "part_1_markdown_modeling": {
+      "model_architecture_inheritance": "物理读取 input_highest_blueprint 中的【计量模型构建与算法级语义约束】章节。最终文档必须严格遵循法典中所设定的全部实证阶段与逻辑演进。必须逐字、逐符号无损继承法典中的所有 LaTeX 核心方程（独立公式用 $$\\dots$$，行内变量用 $ \\dots $），绝对禁止私自修改数学符号或调整方程结构。",
+      "academic_amplification": "全面扩写为具有高水平学术论证深度的模型设定说明。必须用严密的学术公文体系统解释其背后的数理动机（如：各阶段估计方程的设定依据、跨阶段残差传递、以及识别顺序等）。",
+      "data_variable_specification": "根据法典中对应的“数据清单/数据集”章节，详细说明所有衍生变量的物理构造步骤与数据预处理逻辑（如平稳性处理、差分或标准化计算逻辑等）。",
+      "boundary_interception_guardrail": "🛑本步骤仅属于“实证开展前”的纯数理图纸说明与代码脚手架搭建阶段！你被严格禁止在《建模.md》中输出任何关于“实证结果”、“结果讨论”或“政策建议”的内容。必须对法典中的断言与建议章节进行彻底的物理屏蔽，严禁提前生成任何结论性文字！"
+    },
+    "part_2_ipynb_script_generation": {
+      "cell_mapping_mechanism": "构建一个物理可执行的 Jupyter Notebook 脚本。脚本单元格必须实现 1:1 的 [Markdown 说明格] + [Code 执行格] 标准解耦设计。法典规划了几个核心阶段，`.ipynb` 中就必须动态生成几组对应的单元格。",
+      "chinese_font_patch_cell": "脚本首个单元格必须为依赖库加载块。除了导入 pandas, numpy, statsmodels, matplotlib.pyplot 外，【你必须强制写入针对 Mac OS 和 Windows 的自适应中文字体支持与负号显示补丁代码】（如设置 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'SimHei'] 与 plt.rcParams['axes.unicode_minus'] = False）。",
+      "variable_bloodline_lock": "在编写各阶段代码时，必须强制完全调用法典中定义的对应物理/衍生变量，严格按照法典中的核心估计方程结构组织回归矩阵。绝对拦截并禁止任何未经法典授权的变量捏造、概念偷换或泛化替代。",
+      "image_render_cell": "脚本末尾必须预先编写好高清绘图代码。保存图片至 `{{root_path}}/第3步：实证分析/images/` 路径时，必须强制指定 `bbox_inches='tight'` 与高 DPI (如 300)，确保带中文标签的图表物理输出完整、无乱码。"
+    }
+  },
+  "output_control": {
+    "terminal_feedback": "解析完毕并确认“跨目录物理隔离写入”的动态路径后，请在终端直接执行并仅输出：“开始动态构建 3.2 建模流水线，文件正在写入绝对路径。”，严禁输出任何解释性废话或前言后记。"
+  }
+}
