@@ -14,7 +14,7 @@
       "level_3": "1. [空格] (阿拉伯数字后接点和空格)"
     },
     "data_source_rule": {
-      "first_occurrence": "仅在全文第一个出现的图表（表1）下方，左对齐标注：【数据来源：郑商所研究所，下同】",
+      "first_occurrence": "仅在全文第一个出现的图表（表1）下方，左对齐标注：【数据来源：XXXX，下同】",
       "subsequent_occurrence": "后续所有表格和图形下方，一律不进行任何数据来源的标注，直接忽略该行。"
     },
     "table_and_figure": {
