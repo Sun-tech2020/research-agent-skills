@@ -1,8 +1,11 @@
 {
   "skill_name": "2.1 Literature_Capturer",
-  "version": "1.0.0",
-  "description": "科研流水线步骤 2.1：硬核文献地毯式捕获专家（依托 gpt-researcher 与 Python 环境）。支持全局路径动态注入，负责全网检索并物理下载 PDF 至本地参考文献区，同时建立 JSON 存证索引。",
-  "dependencies": [],
+  "version": "2.2.0",
+  "description": "科研流水线步骤 2.1（生产级反幻觉防错版）：硬核文献地毯式捕获与物理二进制校验专家。彻底剔除模糊词汇与高风险依赖，强制执行基于 arXiv API 的稳定检索、底层 `%PDF` 二进制校验与动态正则标题命名。",
+  "dependencies": [
+    "pymupdf",
+    "requests"
+  ],
   "dynamic_variables_required": {
     "research_topic": "系统运行时动态注入的项目研究主题",
     "root_path": "系统运行时动态注入的项目绝对根路径"
@@ -12,31 +15,29 @@
     "index_manifest_file": "{{root_path}}/第2步：参考文献/download_manifest.json"
   },
   "execution_rules": {
-    "role_positioning": "你目前正处于智库/学术全自动流水线的文献捕获节点。请扮演全网地毯式学术检索专家，根据给定的研究主题和时间、质量约束，执行物理级下载与存证动作。",
-    "autonomous_search_protocol": {
-      "search_engine": "启动 gpt-researcher 核心引擎，调用多维度、脱水后的英文学术检索词进行地毯式检索。",
-      "data_source_priority": [
-        "arXiv",
-        "Semantic Scholar",
-        "SSRN",
-        "Google Scholar",
-        "ScienceDirect",
-        "Wiley",
-        "Springer"
-      ],
-      "time_horizon_constraint": "2020年至今（硬性时间窗口过滤）",
-      "target_count": 10
+    "role_positioning": "你目前正处于学术流水线的文献捕获节点。请扮演全网学术检索与反幻觉校验专家，严格执行‘零容忍假文件、零容忍大模型伪造 PDF’的物理级下载与存证动作。",
+    "anti_hallucination_guardrails": {
+      "rule_1_binary_check": "任何下载到本地的文件，必须通过底层 Python 脚本校验其二进制流头部（必须以 b'%PDF' 开头）。严禁将 HTML 报错页面、404 重定向页或大模型生成的纯文本直接伪装成 PDF 保存。",
+      "rule_2_zero_hardcoding": "严禁在下载脚本中硬编码静态论文列表。所有文献必须通过 arXiv API 或经验证的稳定学术直链实时动态抓取。",
+      "rule_3_strict_abort": "若发现某篇文献的 URL 下载失败或二进制头校验未通过，必须触发异常阻断并自动跳过该文献，绝不允许大模型根据标题凭空捏造（Confabulate）虚假的摘要内容。"
     },
-    "physical_download_protocol": {
-      "filter_criteria": "主动排除新闻、网页快照、非学术简报与低水平博客。基于计量模型公式的硬核度、特定实证方法的创新度以及与主题 {{research_topic}} 的高相关度进行筛选。",
-      "download_action": "激活本地 Python 环境（联合调用 requests、wget 或 arxiv 库等底层工具），绕过防爬壁垒，将精选出的 10 篇核心论文的 PDF 全文物理下载并落地存储至 pdf_download_directory 路径下。"
+    "autonomous_search_protocol": {
+      "search_engine": "启动学术检索，针对主题 {{research_topic}} 优先调用 arXiv API (`http://export.arxiv.org/api/query`) 搜索并提取合规的 `.pdf` 直链。",
+      "data_source_priority": [
+        "arXiv API",
+        "SSRN Direct Links"
+      ],
+      "target_count": 15
+    },
+    "physical_download_and_rename_protocol": {
+      "action": "在本地执行 Python 脚本抓取真实学术 PDF 二进制流 (`response.content`)。落盘前校验 b'%PDF' 头部，通过后使用 PyMuPDF (fitz) 打开验证页数。使用正则表达式 `re.sub(r'[\\\\/*?:\"<>|]', '', title)` 清洗论文的【真实英文标题全称】作为物理文件名：`[序号] 真实英文标题全称.pdf`，彻底杜绝张冠李戴或文件名错位。"
     },
     "index_manifest_guardrail": {
-      "action": "在下载动作完成后，立刻在同级目录下自动物理生成或更新 download_manifest.json 索引文件。",
-      "json_format_strict": "严禁生成大段解释，该 JSON 内部必须且只能包含一个标准化数组，严格记录每一个物理落地文件的：『本地文件名 (file_name)』与『文献原始标题 (original_title)』。"
+      "action": "在全部下载与物理二进制校验完成后,立刻在同级目录下自动生成标准的 download_manifest.json 存证文件。",
+      "json_format_strict": "该 JSON 内部必须且只能包含一个标准化数组，严格记录每一个通过二进制校验的物理落地文件的：『本地文件名 (file_name)』、『真实英文原始标题 (original_title)』与『所属研究轨道 (track)』。"
     }
   },
   "output_control": {
-    "terminal_feedback": "任务执行完毕后，请在终端或对话界面直接打印输出已成功下载并物理落地的文献列表，格式为：[序号] 本地文件名 —— 原始标题。严禁带有前言后记。"
+    "terminal_feedback": "任务执行完毕后，请在终端或对话界面直接打印输出已通过二进制校验并成功物理落地的真实文献清单，格式为：[序号] 本地文件名 —— 原始标题（页数统计）。严禁带有前言后记。"
   }
 }
