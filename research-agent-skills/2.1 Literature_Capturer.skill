@@ -1,43 +1,72 @@
 {
   "skill_name": "2.1 Literature_Capturer",
-  "version": "2.2.0",
-  "description": "科研流水线步骤 2.1（生产级反幻觉防错版）：硬核文献地毯式捕获与物理二进制校验专家。彻底剔除模糊词汇与高风险依赖，强制执行基于 arXiv API 的稳定检索、底层 `%PDF` 二进制校验与动态正则标题命名。",
+  "version": "2.7.1",
+  "description": "科研流水线步骤 2.1（文献全自动捕获与分层语料存证专家）：支持 _local_inbox 优先吸收与 Tier B 就地升级通道、Crossref+Unpaywall 主轨、arXiv 拆词兜底的多轨文献源，强制执行 Agent 语义相关性判定（落盘 _relevance_audit.json）、Tier A/B 解耦双阈值门关（min_tier_a:6 / min_total:12）、oa_verdict 结构化状态枚举与全景语料质量报告。【v2.7.1 修订：明确 target_count 为 A+B 总量目标；完善 inbox 人机协同升级边界说明】",
   "dependencies": [
     "pymupdf",
     "requests"
   ],
   "dynamic_variables_required": {
-    "research_topic": "系统运行时动态注入的项目研究主题",
+    "research_topic": "系统运行时动态注入的中文核心研究主题",
+    "research_topic_en": "英文核心检索主题（若未提供，由 Agent 基于中文主题自主学术翻译拆解，严禁中文直接拼入 query）",
+    "unpaywall_email": "调用 Unpaywall API 所需的真实合法电子邮箱（严禁使用占位邮箱，否则 API 报 422 拒绝）",
     "root_path": "系统运行时动态注入的项目绝对根路径"
   },
   "static_slots": {
+    "local_inbox_directory": "{{root_path}}/第2步：参考文献/_local_inbox/",
     "pdf_download_directory": "{{root_path}}/第2步：参考文献/",
-    "index_manifest_file": "{{root_path}}/第2步：参考文献/download_manifest.json"
+    "index_manifest_file": "{{root_path}}/第2步：参考文献/download_manifest.json",
+    "relevance_audit_file": "{{root_path}}/第2步：参考文献/_relevance_audit.json",
+    "pending_completion_file": "{{root_path}}/第2步：参考文献/_待补全清单.md"
   },
   "execution_rules": {
-    "role_positioning": "你目前正处于学术流水线的文献捕获节点。请扮演全网学术检索与反幻觉校验专家，严格执行‘零容忍假文件、零容忍大模型伪造 PDF’的物理级下载与存证动作。",
-    "anti_hallucination_guardrails": {
-      "rule_1_binary_check": "任何下载到本地的文件，必须通过底层 Python 脚本校验其二进制流头部（必须以 b'%PDF' 开头）。严禁将 HTML 报错页面、404 重定向页或大模型生成的纯文本直接伪装成 PDF 保存。",
-      "rule_2_zero_hardcoding": "严禁在下载脚本中硬编码静态论文列表。所有文献必须通过 arXiv API 或经验证的稳定学术直链实时动态抓取。",
-      "rule_3_strict_abort": "若发现某篇文献的 URL 下载失败或二进制头校验未通过，必须触发异常阻断并自动跳过该文献，绝不允许大模型根据标题凭空捏造（Confabulate）虚假的摘要内容。"
+    "role_positioning": "你目前正处于学术流水线的文献捕获节点。请扮演全网学术检索、学术文献语义评审与分层存证专家，严格执行‘零假文件、强语义对口、分层语料管理、拒绝虚假繁荣’的客观规范动作。",
+    "inbox_priority_and_upgrade_protocol": {
+      "action": "启动检索或更新时，物理扫描 local_inbox_directory 目录中的 `.pdf` 文件。通过底层 b'%PDF' 校验后，必须执行双锚点匹配比对：",
+      "matching_rules": "1. DOI 匹配：提取 PDF 首页文本并正则匹配 `10.\\d{4,9}/[-._;()/:A-Z0-9]+`；\n2. 标题相似度匹配：使用小写去标点归一化后计算相似度（SequenceMatcher 阈值 ≥ 0.85）。",
+      "upgrade_action": "若命中现有 manifest 中的记录，必须原地将该记录由 `tier='B'` 升级为 `tier='A'`，填入生成的物理 `file_name`，保留原有 `id` 与 `original_title`，【严禁新增重复记录】；若未命中则作为新条目追加至 Tier A。在终端打印：`[INBOX] 处理完成：吸收新增 N 篇 / 原地升级 M 篇`。"
+    },
+    "semantic_relevance_audit_protocol": {
+      "audit_rule": "🛑【严禁单纯关键词计数，必须执行语义对口判定】：废除任何单纯依靠关键词出现频次的机械规则。对每一个候选条目，Agent 必须通读其 title 与 abstract，对其是否真正对口进行严谨的学术二分类研判（on_topic: true/false）。",
+      "topic_criteria": "判定标准：文献核心研究对象必须为商品或期货市场的真实价格行为、市场异象或监管风控机制，且明确涉及极端波动、资产泡沫、逼空踩踏、涨跌停、暴涨暴跌或尾部风险度量。单纯的通用深度学习时序预测、期权无套利校准或无关计算机/硬件论文一律判为 false 并剔除。",
+      "audit_log_lock": "所有经过评审的候选文献，必须将判定详情原子落盘至 relevance_audit_file (`_relevance_audit.json`)。每条对象必须包含：`id`、`title`、`on_topic` (布尔值)、`verdict_reason` (必须包含具体研究机制或计量方法)、`evidence_snippet` (原文摘要关键佐证句，≤120字)。该文件必须完整保留供人工抽检。"
+    },
+    "corpus_stratification_and_thresholds": {
+      "thresholds": {
+        "min_tier_a_count": 6,
+        "min_total_count": 12,
+        "target_count": 15,
+        "target_count_note": "指候选文献池目标总量（Tier A + Tier B），非 Tier A 单独目标"
+      },
+      "tiers_definition": {
+        "tier_A": "【本地全文就绪层】：包含本地投递箱吸收/升级的文献以及联网成功下载并验证 b'%PDF' 头部与有效页数的论文。下游 2.2 将对其进行全量六插槽深度解构，2.3 进行核心观点综述与因果承接。",
+        "tier_B": "【元数据存证引用层】：由 Crossref 等检索到、经语义判定高度对口但因付费墙/反爬拦截或无直链导致未能自动下载全文的顶刊论文。下游 2.2 跳过解构，2.3 仅作为背景演进引注（必须标注‘[仅元数据]’）。"
+      },
+      "gate_control": "🛑【解耦门关控制】：\n1. 若 Tier A+B 合计 < min_total_count (12篇)，说明检索式本身严重偏狭，流水线抛出 `[ABORT]` 中止并提示优化检索词；\n2. 🛑【防空壳核心锁】：若 Tier A 篇数 < min_tier_a_count (6篇)，流水线【绝对禁止静默放行】进入 2.2！必须自动在同级目录生成 `_待补全清单.md`（列出全部 Tier B 顶刊标题与 DOI 直链），并在终端抛出 `[WARN-HALT]` 挂起：\n『⚠️ 当前 Tier A 全文仅 N 篇 (< 6)，无法支撑高质量综述展开！请选择：\n👉 选项 [1]（推荐）：根据《_待补全清单.md》手动下载 2~4 篇核心顶刊 PDF 放入 _local_inbox，随后回复“升级语料”；\n👉 选项 [2]：明确知晓语料偏薄，回复“强行放行”以现有 N 篇全文继续推进下游。』"
     },
     "autonomous_search_protocol": {
-      "search_engine": "启动学术检索，针对主题 {{research_topic}} 优先调用 arXiv API (`http://export.arxiv.org/api/query`) 搜索并提取合规的 `.pdf` 直链。",
-      "data_source_priority": [
-        "arXiv API",
-        "SSRN Direct Links"
+      "source_priority_pipeline": [
+        "1. local_inbox_directory (本地人工投递区，最高优先级，直接入 Tier A 或就地升级 Tier B)",
+        "2. Crossref API + Unpaywall API (开放获取主轨，解决经管金融顶级期刊命中率)",
+        "3. arXiv API (拆词式检索，作为开放预印本补充兜底)",
+        "4. OpenAlex API (仅在环境变量存在 OPENALEX_API_KEY 时激活，否则自动跳过)"
       ],
-      "target_count": 15
+      "query_construction": {
+        "crossref_query": "query.bibliographic={{research_topic_en}} (拆词检索)",
+        "arxiv_query_template": "all:commodity AND all:futures AND (all:bubble OR all:explosive OR all:crash OR all:extreme OR all:\"price limit\" OR all:GSADF)"
+      },
+      "unpaywall_guardrail": "调用 Unpaywall API 时必须携带有效 unpaywall_email 变量。脚本必须前置校验邮箱格式，若发现使用 test@、example.com 等占位符，立即报错拒绝，防止触发 API 422 报错。"
     },
     "physical_download_and_rename_protocol": {
-      "action": "在本地执行 Python 脚本抓取真实学术 PDF 二进制流 (`response.content`)。落盘前校验 b'%PDF' 头部，通过后使用 PyMuPDF (fitz) 打开验证页数。使用正则表达式 `re.sub(r'[\\\\/*?:\"<>|]', '', title)` 清洗论文的【真实英文标题全称】作为物理文件名：`[序号] 真实英文标题全称.pdf`，彻底杜绝张冠李戴或文件名错位。"
+      "action": "针对筛选出的合规下载链接，使用标准浏览器 User-Agent 进行流下载。落盘前校验 b'%PDF' 头部，通过后使用 PyMuPDF (fitz) 验证页数。以 API 返回的权威英文标题清洗命名：`[序号] 真实英文标题全称.pdf`。若遭遇 403 付费墙拦截或无直链，将该条目转入 Tier B 元数据存证，结构化记录 oa_verdict。"
     },
     "index_manifest_guardrail": {
-      "action": "在全部下载与物理二进制校验完成后,立刻在同级目录下自动生成标准的 download_manifest.json 存证文件。",
-      "json_format_strict": "该 JSON 内部必须且只能包含一个标准化数组，严格记录每一个通过二进制校验的物理落地文件的：『本地文件名 (file_name)』、『真实英文原始标题 (original_title)』与『所属研究轨道 (track)』。"
+      "action": "在全部下载、语义审计、就地升级与分层完成后，立刻在同级目录下自动生成标准的 download_manifest.json 存证文件。",
+      "id_uniqueness_assertion": "🛑【id 唯一性断言】：在写入 download_manifest.json 前，脚本必须强制断言数组中所有对象的 `id` 属性唯一（`len(set(ids)) == len(ids)`）。若存在重复 id，立即抛错 `[FATAL] 检测到 manifest 包含重复记录` 阻断写入！",
+      "json_format_strict": "该 JSON 内部必须且只能包含一个标准化对象数组，每条记录严格包含：\n- `id`: 稳定唯一主键（DOI 或 arXiv ID）\n- `file_name`: 本地物理文件名（若为 Tier B 则为 null）\n- `original_title`: 真实英文原始全称标题\n- `source`: 数据来源平台（local_inbox / crossref / unpaywall / arxiv / openalex）\n- `oa_status`: 开放存取合规状态（gold / green / bronze / closed 等）\n- `oa_verdict`: 物理可得性枚举（'downloadable' | 'oa_no_pdf_link' | 'blocked_403' | 'closed'）\n- `tier`: 语料分层标识（'A' 或 'B'）\n- `track`: 所属研究轨道"
     }
   },
   "output_control": {
-    "terminal_feedback": "任务执行完毕后，请在终端或对话界面直接打印输出已通过二进制校验并成功物理落地的真实文献清单，格式为：[序号] 本地文件名 —— 原始标题（页数统计）。严禁带有前言后记。"
+    "terminal_feedback": "任务执行完毕后，禁止简单打印‘完成’，必须在终端输出完整的【全景语料质量与门关状态报告】：\n1. 门关状态：标注 `[PASS]`、`[WARN-HALT]` 或 `[ABORT]`；\n2. 统计清单：各源贡献篇数、Tier A/B 分布数量、oa_verdict 结构化枚举分布（downloadable / oa_no_pdf_link / blocked_403 / closed）、语义审计通过率；\n3. 打印最终清单：[序号] [Tier] 本地文件名/标题 —— 来源平台与 oa_verdict 判定。若进入 WARN-HALT 状态，必须明确打印操作选项引导用户。"
   }
 }

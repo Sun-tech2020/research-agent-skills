@@ -1,7 +1,7 @@
 {
   "skill_name": "3.3 Empirical_Result_Synthesizer",
-  "version": "1.0.0",
-  "description": "科研流水线步骤 3.3：模型结果合成与断言动态激活元引擎。负责抓取交互代码运行的事实数据，硬核匹配理论法典中的 IF/ELSE 条件区间，并拼装高密度 Markdown 三线表与防崩溃图片标签。",
+  "version": "1.2.0",
+  "description": "科研流水线步骤 3.3：模型结果合成与断言动态激活元引擎。负责抓取交互代码运行的事实数据，硬核匹配理论法典中的 IF/ELSE 条件区间，并拼装高密度 Markdown 三线表与防崩溃图片标签。【v1.2.0 修订：科学优化 outputs 校验规则，放宽单元格比例阈值至 50% 并重点锁定核心估计单元格 outputs；取消必须含图的硬性绑架，自适应兼容纯表格实证研究】",
   "dependencies": [],
   "dynamic_variables_required": {
     "research_topic": "系统运行时动态注入的项目研究主题",
@@ -18,7 +18,8 @@
   "execution_rules": {
     "role_positioning": "你目前正处于代码执行结果转化节点。请扮演顶级学术期刊的实证分析主笔，负责将代码执行的统计矩阵和执行输出转化为符合顶刊规范的实证正文章节。",
     "fact_extraction_and_assertion_activation": {
-      "data_extraction": "深度深度读取并解析 input_ipynb_source 代码源运行后产生的实际执行输出结果（如 AIC/BIC 滞后阶数、统计量、p值、特征值、脉冲响应期数等真实数值特征）。",
+      "pre_execution_outputs_guardrail": "🛑【代码实际执行硬核锁】：解析 input_ipynb_source 时，首先物理检查该 .ipynb 文件中的执行状态：Code Cell 中带有效 outputs 的单元格比例必须 ≥ 50%，且末尾核心估计模型单元格（如 VAR/ADF/回归统计）必须包含真实 outputs。若文件全无 outputs，表明脚本从未执行，必须立即中止并报错提示：‘🛑 ipynb 脚本尚未执行（无 outputs 记录），严禁凭空捏造虚假实证数据！请先执行脚本回填输出后再流转至 3.3’。若实证设计包含绘图，则检查 input_image_library 是否存在图表；若为纯表格计量研究则不作强行图片拦截。",
+      "data_extraction": "深度读取并解析 input_ipynb_source 代码源运行后产生的实际执行输出结果（如 AIC/BIC 滞后阶数、统计量、p值、特征值、脉冲响应期数等真实数值特征）。",
       "if_else_matching": "拿着提取出的真实事实数据，物理前往 input_theoretical_blueprint 的【## 四、 实证分析结果特征断言与分析关卡】章节，逐一匹配其设定的 IF/ELSE 动态反馈机制。根据真实数据落入的条件区间，你必须【一字不差】地调用且仅调用法典中对应的标准学术结论进行事实收敛陈述。"
     },
     "markdown_table_reconstruction": {
@@ -26,7 +27,7 @@
       "data_fidelity_lock": "⚠️数据保真死锁：表格内的所有数值（系数、标准误、t值、p值等）必须 100% 来源于代码运行的真实输出，绝对禁止捏造、四舍五入过度或幻觉填数！表格上方必须带有标准表头标号与加粗物理名称（格式如：`**表1：{{research_topic}}主要估计与检验结果**`）。"
     },
     "obsidian_rendering_defense_line": {
-      "image_embedding": "使用标准的 Markdown 图片引用语法将 input_image_library 中的高清图片精准嵌入正文。图片下方另起一行带标准图注（格式如：`图1：{{research_topic}}动态演化轨迹`）。",
+      "image_embedding": "若本研究包含图表且 input_image_library 存在图片，使用标准的 Markdown 图片引用语法将高清图片精准嵌入正文。图片下方另起一行带标准图注（格式如：`图1：{{research_topic}}动态演化轨迹`）。",
       "tag_zero_latex_deadlock": "⚠️【Obsidian 标签防渲染崩溃死锁】：在 Markdown 引用图片的方括号 `![...]` 内部，你被严格禁止输入任何 `$` 符号、下划线 `_`、LaTeX 方程或特殊的代数符号。方括号内必须且只能使用纯净的、无符号的中文文字作为图表标题，否则会直接引发 Obsidian 引擎渲染报错崩溃！"
     },
     "academic_purification_guardrails": {

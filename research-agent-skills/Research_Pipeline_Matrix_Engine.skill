@@ -1,15 +1,16 @@
 {
   "skill_name": "Research_Pipeline_Matrix_Engine",
-  "version": "1.4.0",
-  "description": "科研全自动流水线超级中央编排引擎。支持数据完整性自适应路径路由，完美支持‘不完整数据分流暂存’与‘模型数据生产区全面闭环’的硬核科研自适应流水线。",
+  "version": "1.9.0",
+  "description": "科研全自动流水线超级中央编排引擎。支持数据完整性自适应路径路由、递归数据文件物理预检、_local_inbox 优先吸收与 Tier B 就地升级通道、Tier A/B 解耦双阈值门关、3.2.5 实证代码执行硬核闭环与生产区全面闭环的端到端自适应科研流水线。【v1.9.0 修订：全面集成 Tier A/B 解耦双阈值门关防空壳放行机制；支持 inbox 补投就地升级语料联动流转】",
   "activation_protocol": {
-    "command_trigger_pattern": "调用 Research_Pipeline_Matrix_Engine.skill，开始课题：{research_topic}的分析，论文成果路径存储到：{root_path}，原始数据源路径指定为：{data_source_path}，实证代码与图片生产区指定为：{code_and_images_path}",
-    "initialization_action": "当接收到上述指令时，Agent 必须立刻物理拦截（Intercept）执行流，严禁直接生成 any 文档。Agent 必须首先向用户抛出数据完整性问询，明确数据就位状态后方可激活对应的执行分支。[cite: 30]"
+    "command_trigger_pattern": "调用 Research_Pipeline_Matrix_Engine.skill，开始课题：{research_topic}的分析，论文成果路径存储到：{root_path}，原始数据源路径指定为：{data_source_path}，实证代码与图片生产区指定为：{code_and_images_path}，Unpaywall邮箱指定为：{unpaywall_email}",
+    "initialization_action": "当接收到上述指令时，Agent 必须立刻物理拦截（Intercept）执行流，严禁直接生成 any 文档。Agent 必须首先向用户抛出数据完整性问询，明确数据就位状态后方可激活对应的执行分支。"
   },
   "global_dynamic_variables": {
-    "research_topic": "运行时由用户指令动态注入的中文核心研究主题[cite: 30]",
-    "research_topic_en": "由系统基于主题自主指定的英文简称（用于代码与文件命名）[cite: 30]",
-    "root_path": "【成果区】论文成果与 Obsidian 联动文档最终落地的绝对路径[cite: 30]",
+    "research_topic": "运行时由用户指令动态注入的中文核心研究主题",
+    "research_topic_en": "由系统基于主题自主指定的英文简称（用于代码与文件命名）",
+    "unpaywall_email": "调用 Unpaywall API 所需的真实合法电子邮箱（严禁使用占位邮箱，否则 API 报 422 拒绝）",
+    "root_path": "【成果区】论文成果与 Obsidian 联动文档最终落地的绝对路径",
     "data_source_path": "【原始数据存放区】存放科研版前期不完整/待孵化原始数据的绝对路径",
     "code_and_images_path": "【模型数据/实证生产区】存放两轨完整数据、运行代码、保存ipynb脚本、建模过程及高清图表输出的专属闭环核心生产区路径",
     "has_complete_data": "运行时注入的标识（'true' / 'false'），表示科研版用户是否拥有完整数据"
@@ -26,9 +27,10 @@
     "step_4_2": "4.2 Format_Standard.skill"
   },
   "interactive_regime_routing_protocol": {
+    "pre_initialization_check": "在抛出问询前，Agent 必须首先物理核查目标目录。若目录不存在则自动创建；若用户选择 [A]（有完整数据），Agent 必须递归核查当前指定的具体 {{code_and_images_path}} 目录下是否存在至少一个实体数据文件（匹配 *.csv, *.xlsx, *.parquet, *.dta, *.feather）。若未匹配到任何数据文件，即使目录结构存在，也必须立即提示用户：‘🛑 未在 {{code_and_images_path}} 中检测到任何数据文件，请先将数据放入该目录再启动 [A] 分支’，严禁空数据推进。",
     "step_0_init_data_inquiry": "『📢 请问您目前是否有完整的数据？\n  👉 选项 [A] 有完整数据（请将数据放入“模型数据”文件夹，我将仅基于您的已有数据进行建模，不推荐 any 外部多余变量）\n  👉 选项 [B] 没有/仅有部分数据（请将数据放入“原始数据”文件夹，我将自主为您匹配设计前沿计量模型，并给出后续数据抓取建议）\n请直接回复 [A] 或 [B]：』",
     "branching_logic": {
-      "if_has_complete_data_true": "锁定 `has_complete_data` 设为 'true'。data_source_path 自动指向 code_and_images_path。提示用户将数据放入『模型数据』文件夹。启动 1.1 组件时强制注入 `has_complete_data='true'`，约束大纲建模必须仅基于已有数据。1.2 结束后自动 Pass 挂起关卡。",
+      "if_has_complete_data_true": "锁定 `has_complete_data` 设为 'true'。data_source_path 自动指向 code_and_images_path。提示用户将数据放入『模型数据』文件夹。启动 1.1 组件时强制注入 `has_complete_data='true'`，约束大纲建模必须仅基于已有数据。在 3.1 步骤直接打印跳过日志并自动 Pass 进入 3.2。",
       "if_has_complete_data_false": "锁定 `has_complete_data` 设为 'false'。提示用户将已有数据放入『原始数据』文件夹。启动 1.1 组件时注入 `has_complete_data='false'`，启动自主发散理想建模。1.2 结束后在 3.1 拦截并指导用户补齐数据放入『模型数据』。"
     }
   },
@@ -64,9 +66,18 @@
       }
     },
     "第二步：搜集并下载文献": {
-      "2.1 文献物理捕获": { "call_skill": "2.1 Literature_Capturer", "output_path": "{{root_path}}/第2步：参考文献/download_manifest.json" },
+      "2.1 文献物理捕获": {
+        "call_skill": "2.1 Literature_Capturer",
+        "output_path": "{{root_path}}/第2步：参考文献/download_manifest.json",
+        "next_step_gate": {
+          "next_step": "2.2 文献群像解构",
+          "query_template": "2.1 【文献物理下载、语义审计与分层存证】已完成（Tier A 需达标方可放行），是否开始 2.2【文献群像解构】？",
+          "suspend_guide": "当 2.1 门关状态为 [PASS] 或用户明确确认后，请明示：开始生成 2.2【文献群像解构】"
+        }
+      },
       "2.2 文献群像解构": {
         "call_skill": "2.2 Reviewer_Blueprint",
+        "io_protocol": "仅遍历并解构 manifest 中 `tier == 'A'` 的本地全文文献，严格跳过 Tier B 元数据条目，产出六插槽脱水成果。",
         "output_path": "{{root_path}}/第2步：参考文献/总体评论+每篇论文摘要.md",
         "next_step_gate": {
           "next_step": "2.3 文献综述总装",
@@ -76,18 +87,19 @@
       },
       "2.3 文献综述总装": {
         "call_skill": "2.3 Literature_Review_Synthesizer",
+        "io_protocol": "深度适配 Tier A 核心深度评述与 Tier B 背景引注，执行文末参考文献对齐与 Tier A 本地 PDF 物理洗牌并原子同步回写 manifest。",
         "output_path": "{{root_path}}/第2步：参考文献/文献综述.md",
         "next_step_gate": {
-          "next_step": "3.2 计量模型构建与代码双轨产出",
-          "query_template": "2.3 【文献综述.md】已生成，是否开始生成 3.2【建模.md】？",
-          "suspend_guide": "当2.3 【文献综述.md】完善后，请明示：开始生成 3.2【建模.md】"
+          "next_step": "3.1 / 3.2 计量模型构建与代码双轨产出",
+          "query_template": "2.3 【文献综述.md】已生成，是否开始流转至实证分析环节？",
+          "suspend_guide": "当2.3 【文献综述.md】完善后，请明示：开始进入实证分析"
         }
       }
     },
     "第三步：实证分析": {
       "3.1 下载数据（人类干预挂起门关）": {
         "call_skill": "None (Human Action Hooks)",
-        "action_description": "智能体输出所需数据指标清单，提示用户寻找并将补齐后的【完整数据】物理放入模型数据生产区路径（{{code_and_images_path}}）中，等待用户回复‘数据已就位’。"
+        "action_description": "【条件激活】：仅当全局变量 `has_complete_data == 'false'` 时激活本门关，智能体输出所需数据指标清单，提示用户寻找并将补齐后的【完整数据】物理放入模型数据生产区路径（{{code_and_images_path}}）中，等待用户回复‘数据已就位’；若 `has_complete_data == 'true'`，本步骤自动跳过并直接流转至 3.2，在终端打印：`[SKIP 3.1] 数据已完整就位（has_complete_data=true），跳过数据补齐门关`。"
       },
       "3.2 计量模型构建与代码双轨产出": {
         "call_skill": "3.2 Empirical_Modeler",
@@ -97,9 +109,18 @@
           "{{code_and_images_path}}/{{research_topic_en}}_Empirical.ipynb"
         ],
         "next_step_gate": {
+          "next_step": "3.2.5 运行实证脚本与输出校验",
+          "query_template": "3.2 【建模.md 与 ipynb 代码】已生成，是否进入 3.2.5 执行门关进行运行与输出校验？",
+          "suspend_guide": "当3.2 【建模.md】确认无误后，请明示：开始执行 3.2.5 运行校验"
+        }
+      },
+      "3.2.5 运行实证脚本与输出校验": {
+        "call_skill": "None (Execution & Output Verification Hook)",
+        "action_description": "代码生成完毕后的执行硬核门关。支持两类执行路径：\n1. Agent 代跑：必须先切换工作目录 `cd {{code_and_images_path}}`（防止相对路径读取数据失败），调用执行命令：`jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 {{code_and_images_path}}/{{research_topic_en}}_Empirical.ipynb`。若环境缺少依赖，提示执行 `pip install nbconvert`；\n2. 用户本地运行：用户在本地 Jupyter 环境中手动执行并保存该 ipynb 文件。\n【放行硬核条件】：进入 3.3 前，必须物理核查该 ipynb 中带 outputs 的 code cell 比例 ≥ 50%，且核心模型单元格包含真实 outputs。若无 outputs 则强行中断，严禁进入 3.3。",
+        "next_step_gate": {
           "next_step": "3.3 模型结果合成与断言动态激活",
-          "query_template": "3.2 【建模.md】已生成（请先在本地运行完 ipynb 代码并确认），是否开始生成 3.3【模型结果.md】？",
-          "suspend_guide": "当3.2 【建模.md】完善后，请明示：开始生成 3.3【模型结果.md】"
+          "query_template": "3.2.5 【代码已成功执行且 outputs 校验通过】，是否开始生成 3.3【模型结果.md】？",
+          "suspend_guide": "当实证代码运行完毕且保存 outputs 后，请明示：开始生成 3.3【模型结果.md】"
         }
       },
       "3.3 模型结果合成与断言动态激活": {
